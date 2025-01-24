@@ -21,105 +21,53 @@ data = open('data/xvel yvel.txt', 'w')
 data.write('55 55')
 data.close()
 
-ANIMATION_DELAY = 0.9 # скорость смены кадров
-ANIMATION_SUPER_SPEED_DELAY = 0.5 # скорость смены кадров при ускорении
-ICON_DIR = os.path.dirname(__file__) #  Полный путь к каталогу с файлами
-
-ANIMATION_RIGHT = [('%s/mario/r1.png' % ICON_DIR),
-            ('%s/mario/r2.png' % ICON_DIR),
-            ('%s/mario/r3.png' % ICON_DIR),
-            ('%s/mario/r4.png' % ICON_DIR),
-            ('%s/mario/r5.png' % ICON_DIR)]
-ANIMATION_LEFT = [('%s/mario/l1.png' % ICON_DIR),
-            ('%s/mario/l2.png' % ICON_DIR),
-            ('%s/mario/l3.png' % ICON_DIR),
-            ('%s/mario/l4.png' % ICON_DIR),
-            ('%s/mario/l5.png' % ICON_DIR)]
-ANIMATION_JUMP_LEFT = [('%s/mario/jl.png' % ICON_DIR, 0.1)]
-ANIMATION_JUMP_RIGHT = [('%s/mario/jr.png' % ICON_DIR, 0.1)]
-ANIMATION_JUMP = [('%s/mario/j.png' % ICON_DIR, 0.1)]
-ANIMATION_STAY = [('%s/mario/0.png' % ICON_DIR, 0.1)]
-
-
-
 
 class Player(sprite.Sprite):
     def __init__(self, x, y):
+        self.imagesr = [(image.load('player/r1.png')), (image.load('player/r2.png'))]
+        self.imagesl = [(image.load('player/l1.png')), (image.load('player/l2.png'))]
+        self.images_stop = [(image.load('player/s.png'))]
+        self.index = 0
+        self.image = self.imagesr[self.index]
+        self.image_s = self.images_stop[self.index]
         sprite.Sprite.__init__(self)
         self.xvel = 0
         self.startX = x
         self.startY = y
-        self.image = Surface((WIDTH, HEIGHT))
-        self.image = image.load("data/play.png")
         self.rect = Rect(x, y, WIDTH, HEIGHT)
         self.yvel = 0
-        self.onGround = False  # На земле ли я?
-        self.image.set_colorkey(Color(COLOR))  # делаем фон прозрачным
-        #        Анимация движения вправо
-        boltAnim = []
-        boltAnimSuperSpeed = []
-        for anim in ANIMATION_RIGHT:
-            boltAnim.append((anim, ANIMATION_DELAY))
-            boltAnimSuperSpeed.append((anim, ANIMATION_SUPER_SPEED_DELAY))
-        self.boltAnimRight = pyganim.PygAnimation(boltAnim)
-        self.boltAnimRight.play()
-        self.boltAnimRightSuperSpeed = pyganim.PygAnimation(boltAnimSuperSpeed)
-        self.boltAnimRightSuperSpeed.play()
-        #        Анимация движения влево
-        boltAnim = []
-        boltAnimSuperSpeed = []
-        for anim in ANIMATION_LEFT:
-            boltAnim.append((anim, ANIMATION_DELAY))
-            boltAnimSuperSpeed.append((anim, ANIMATION_SUPER_SPEED_DELAY))
-        self.boltAnimLeft = pyganim.PygAnimation(boltAnim)
-        self.boltAnimLeft.play()
-        self.boltAnimLeftSuperSpeed = pyganim.PygAnimation(boltAnimSuperSpeed)
-        self.boltAnimLeftSuperSpeed.play()
-
-        self.boltAnimStay = pyganim.PygAnimation(ANIMATION_STAY)
-        self.boltAnimStay.play()
-        self.boltAnimStay.blit(self.image, (0, 0))  # По-умолчанию, стоим
-
-        self.boltAnimJumpLeft = pyganim.PygAnimation(ANIMATION_JUMP_LEFT)
-        self.boltAnimJumpLeft.play()
-
-        self.boltAnimJumpRight = pyganim.PygAnimation(ANIMATION_JUMP_RIGHT)
-        self.boltAnimJumpRight.play()
-
-        self.boltAnimJump = pyganim.PygAnimation(ANIMATION_JUMP)
-        self.boltAnimJump.play()
-        self.winner = False
+        self.onGround = False
 
 
     def update(self, left, right, up, platforms):
+
+
         if up:
             if self.onGround:  # прыгаем, только когда можем оттолкнуться от земли
                 self.yvel = -JUMP_POWER
-            self.image.fill(Color(COLOR))
-            self.boltAnimJump.blit(self.image, (0, 0))
 
         if left:
             self.xvel = -MOVE_SPEED
-            self.image.fill(Color(COLOR))
-            if up:  # для прыжка влево есть отдельная анимация
-                self.boltAnimJumpLeft.blit(self.image, (0, 0))
-            else:
-                self.boltAnimLeft.blit(self.image, (0, 0))
+            self.index += 1
+            if self.index >= 5 * len(self.imagesl):
+                self.index = 0
+            self.image = self.imagesl[self.index // 5]
 
         if right:
             self.xvel = MOVE_SPEED
-        self.image.fill(Color(COLOR))
-        if up:
-            self.boltAnimJumpRight.blit(self.image, (0, 0))
-        else:
-            self.boltAnimRight.blit(self.image, (0, 0))
+            self.index += 1
+            if self.index >= 7 * len(self.imagesr):
+                self.index = 0
+            self.image = self.imagesr[self.index // 7]
 
 
         if not (left or right):
             self.xvel = 0
-            if not up:
-                self.image.fill(Color(COLOR))
-                self.boltAnimStay.blit(self.image, (0, 0))
+            self.index += 1
+            if self.index >= 10 * len(self.images_stop):
+                self.index = 0
+            self.image = self.images_stop[self.index // 10]
+
 
         if not self.onGround:
             self.yvel += GRAVITY

@@ -219,10 +219,6 @@ def main():
     bg = pygame.Surface((WIN_WIDTH, WIN_HEIGHT))
     bg.fill(pygame.Color(BACKGROUND_COLOR))
 
-
-
-
-
     hero = Player(55, 55)
     bull = Bullet(55, 55)
     left = right = False
@@ -267,7 +263,6 @@ def main():
                     platforms.append(mn)
                     monsters.add(mn)
 
-
                 x += PLATFORM_WIDTH
             y += PLATFORM_HEIGHT
             x = 0
@@ -280,12 +275,9 @@ def main():
 
     while 1:
         timer.tick(60)
-
         for e in pygame.event.get():
             if dead:
                 print('sdf')
-
-
             if e.type == pygame.QUIT:
                 raise SystemExit("QUIT")
             if e.type == KEYDOWN and e.key == pygame.K_a:
@@ -307,15 +299,8 @@ def main():
 
             if e.type == pygame.KEYUP and e.key == K_RETURN:
                 shot = False
-            #if e.type == KEYDOWN and e.key == pygame.K_k:
-                #pygame.draw.rect(screen, (0, 255, 0), (xvel, yvel,
-                #                                       text_w + 20, text_h + 20), 1)
-            #if e.type == pygame.KEYUP and e.key == pygame.K_k:
-               # blud = False
-
 
         screen.blit(bg, (0, 0))
-
         hero.update(left, right, up, platforms)
         bull.update(shot, platforms, turn)
         monsters.update(platforms)
