@@ -16,7 +16,9 @@ COLOR = "#888888"
 JUMP_POWER = 7
 GRAVITY = 0.35
 dead = False
-
+WIN_WIDTH = 1000
+WIN_HEIGHT = 608
+DISPLAY = (WIN_WIDTH, WIN_HEIGHT)
 data = open('data/xvel yvel.txt', 'w')
 data.write('55 55')
 data.close()
@@ -24,9 +26,10 @@ data.close()
 
 class Player(sprite.Sprite):
     def __init__(self, x, y):
-        self.imagesr = [(image.load('player/r1.png')), (image.load('player/r2.png'))]
+        self.imagesr = [(image.load('player/r0.png')), (image.load('player/r1.png')), (image.load('player/r2.png')),
+                        (image.load('player/r3.png')), (image.load('player/r4.png'))]
         self.imagesl = [(image.load('player/l1.png')), (image.load('player/l2.png'))]
-        self.images_stop = [(image.load('player/s.png'))]
+        self.images_stop = [(image.load('player/1s.gif'))]
         self.index = 0
         self.image = self.imagesr[self.index]
         self.image_s = self.images_stop[self.index]
@@ -37,13 +40,17 @@ class Player(sprite.Sprite):
         self.rect = Rect(x, y, WIDTH, HEIGHT)
         self.yvel = 0
         self.onGround = False
+        self.screen = display.set_mode(DISPLAY)
+        self.f1 = font.Font(None, 150)
+        self.text1 = self.f1.render('DEAD', True,
+                      (0, 0, 0))
 
 
     def update(self, left, right, up, platforms):
 
 
         if up:
-            if self.onGround:  # прыгаем, только когда можем оттолкнуться от земли
+            if self.onGround:
                 self.yvel = -JUMP_POWER
 
         if left:
@@ -86,6 +93,7 @@ class Player(sprite.Sprite):
         data.close()
 
 
+
     def collide(self, xvel, yvel, platforms):
         for p in platforms:
             if sprite.collide_rect(self, p):
@@ -117,7 +125,8 @@ class Player(sprite.Sprite):
         dead = False
 
     def die(self):
+        self.screen.blit(self.text1, (390, 250))
         global dead
         dead = True
-        time.wait(100)
+        time.wait(1000)
         self.teleporting(self.startX, self.startY)

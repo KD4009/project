@@ -1,8 +1,5 @@
 import pygame
-
-
-from pygame.constants import KEYDOWN, K_SPACE, K_RETURN
-
+from pygame.constants import KEYDOWN, K_SPACE, K_RETURN, K_ESCAPE
 import player
 from player import *
 from block import *
@@ -14,7 +11,6 @@ from Lov import *
 import os
 import sys
 import argparse
-
 
 
 FPS = 60
@@ -34,11 +30,10 @@ data2 = open('data/obuchenie.txt', encoding='utf-8').read()
 table2 = [r.split('\t') for r in data2.split('\n')]
 
 
-
 class Camera(object):
-    def __init__(self, camera_func, w, h):
+    def __init__(self, camera_func, width, height):
         self.camera_func = camera_func
-        self.state = Rect(0, 0, w, h)
+        self.state = Rect(0, 0, width, height)
 
     def apply(self, target):
         return target.rect.move(self.state.topleft)
@@ -63,7 +58,7 @@ def sc():
     pygame.init()
     screen = pygame.display.set_mode(DISPLAY)
     pygame.display.set_caption("Sh")
-    bg = pygame.image.load("data/s.jpg")
+    bg = pygame.image.load("data/back.png")
     screen.blit(bg, (0, 0))
     timer = pygame.time.Clock()
 
@@ -172,8 +167,8 @@ def ob():
             y += PLATFORM_HEIGHT
             x = 0
 
-    total_level_width = len(table[0][0]) * PLATFORM_WIDTH  # Высчитываем фактическую ширину уровня
-    total_level_height = len(table) * PLATFORM_HEIGHT  # высоту
+    total_level_width = len(table2[0][0]) * PLATFORM_WIDTH
+    total_level_height = (len(table2))* PLATFORM_HEIGHT
     camera = Camera(camera_configure, total_level_width, total_level_height)
 
     while 1:
@@ -200,7 +195,8 @@ def ob():
                 shot = True
             if e.type == pygame.KEYUP and e.key == K_RETURN:
                 shot = False
-
+            if e.type == KEYDOWN and e.key == K_ESCAPE:
+                sc()
         screen.blit(bg, (0, 0))
         hero.update(left, right, up, platforms)
         bull.update(shot, platforms, turn)
@@ -213,9 +209,12 @@ def ob():
 
 
 def main():
+    f1 = pygame.font.Font(None, 50)
+    text1 = f1.render('Hello Привет', True,
+                      (0, 0, 0))
     pygame.init()
     screen = pygame.display.set_mode(DISPLAY)
-    pygame.display.set_caption("Shuter")
+    pygame.display.set_caption("Sh")
     bg = pygame.Surface((WIN_WIDTH, WIN_HEIGHT))
     bg.fill(pygame.Color(BACKGROUND_COLOR))
 
@@ -242,7 +241,7 @@ def main():
                     platforms.append(rt)
 
                 if i == "<":
-                    a = Lovushka(x, y, 2, 50, 15)
+                    a = Lovushka(x, y, 3, 100)
                     entities.add(a)
                     platforms.append(a)
                     Lov.add(a)
@@ -269,8 +268,6 @@ def main():
 
     total_level_width = len(table[0][0]) * PLATFORM_WIDTH
     total_level_height = len(table) * PLATFORM_HEIGHT
-
-
     camera = Camera(camera_configure, total_level_width, total_level_height)
 
     while 1:
@@ -296,11 +293,15 @@ def main():
                 up = False
             if e.type == KEYDOWN and e.key == K_RETURN:
                 shot = True
-
             if e.type == pygame.KEYUP and e.key == K_RETURN:
                 shot = False
+            if e.type == KEYDOWN and e.key == K_ESCAPE:
+                sc()
+
 
         screen.blit(bg, (0, 0))
+
+
         hero.update(left, right, up, platforms)
         bull.update(shot, platforms, turn)
         monsters.update(platforms)

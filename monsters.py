@@ -6,26 +6,31 @@ import os
 MONSTER_WIDTH = 32
 MONSTER_HEIGHT = 32
 MONSTER_COLOR = "#5110FF"
-ICON_DIR = os.path.dirname(__file__)  # Полный путь к каталогу с файлами
-
+ICON_DIR = os.path.dirname(__file__)
 
 class Monster(sprite.Sprite):
     def __init__(self, x, y, left, up, maxLengthLeft, maxLengthUp):
         sprite.Sprite.__init__(self)
         self.image = Surface((MONSTER_WIDTH, MONSTER_HEIGHT))
         self.image = image.load("data/Monster.png")
+        self.images = [(image.load('player/m0.gif')), (image.load('player/m1.gif')), (image.load('player/m2.gif'))]
+        self.index = 0
+        self.image = self.images[self.index]
         self.rect = Rect(x, y, MONSTER_WIDTH, MONSTER_HEIGHT)
-        self.startX = x  # начальные координаты
+        self.startX = x
         self.startY = y
-        self.maxLengthLeft = maxLengthLeft  # максимальное расстояние, которое может пройти в одну сторону
-        self.maxLengthUp = maxLengthUp  # максимальное расстояние, которое может пройти в одну сторону, вертикаль
-        self.xvel = left  # cкорость передвижения по горизонтали, 0 - стоит на месте
-        self.yvel = up  # скорость движения по вертикали, 0 - не двигается
+        self.maxLengthLeft = maxLengthLeft
+        self.maxLengthUp = maxLengthUp
+        self.xvel = left
+        self.yvel = up
 
 
-    def update(self, platforms):  # по принципу героя
+    def update(self, platforms):
 
-        
+        self.index += 1
+        if self.index >= 7 * len(self.images):
+            self.index = 0
+        self.image = self.images[self.index // 7]
 
         self.rect.y += self.yvel
         self.rect.x += self.xvel
