@@ -22,6 +22,7 @@ DISPLAY = (WIN_WIDTH, WIN_HEIGHT)
 data = open('data/xvel yvel.txt', 'w')
 data.write('55 55')
 data.close()
+NEXT = False
 
 
 class Player(sprite.Sprite):
@@ -35,8 +36,8 @@ class Player(sprite.Sprite):
         self.image_s = self.images_stop[self.index]
         sprite.Sprite.__init__(self)
         self.xvel = 0
-        self.startX = x
-        self.startY = y
+        self.startX = 55
+        self.startY = 55
         self.rect = Rect(x, y, WIDTH, HEIGHT)
         self.yvel = 0
         self.onGround = False
@@ -100,6 +101,9 @@ class Player(sprite.Sprite):
                 if isinstance(p, block.BlockDie) or isinstance(p,
                                                                 monsters.Monster) or isinstance(p, Lov.Lovushka):
                     self.die()
+                if isinstance(p, block.END):
+                    global NEXT
+                    NEXT = True
 
                 else:
 
@@ -119,14 +123,9 @@ class Player(sprite.Sprite):
                         self.yvel = 0
 
     def teleporting(self, goX, goY):
-        global dead
         self.rect.x = goX
         self.rect.y = goY
-        dead = False
 
     def die(self):
-        self.screen.blit(self.text1, (390, 250))
-        global dead
-        dead = True
         time.wait(1000)
         self.teleporting(self.startX, self.startY)

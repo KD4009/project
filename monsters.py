@@ -44,6 +44,6 @@ class Monster(sprite.Sprite):
 
     def collide(self, platforms):
         for p in platforms:
-            if sprite.collide_rect(self, p) and self != p:  # если с чем-то или кем-то столкнулись
-                self.xvel = - self.xvel  # то поворачиваем в обратную сторону
+            if sprite.collide_rect(self, p) and self != p:
+                self.xvel = - self.xvel
                 self.yvel = - self.yvel
