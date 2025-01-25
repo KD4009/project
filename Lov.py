@@ -12,7 +12,6 @@ class Lovushka(sprite.Sprite):
     def __init__(self, x, y, left, maxLengthLeft):
         sprite.Sprite.__init__(self)
         self.image = Surface((LOVUSHKA_WIDTH, LOVUSHKA_HEIGHT))
-        self.image = image.load("data/player.jpg")
         self.rect = Rect(x, y, LOVUSHKA_WIDTH, LOVUSHKA_HEIGHT)
         self.images = [(image.load('player/e0.gif')), (image.load('player/e1.gif'))]
         self.imagesr = [(image.load('player/e2.gif')), (image.load('player/e3.gif')), (image.load('player/e2.gif'))]

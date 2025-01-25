@@ -17,8 +17,6 @@ class Bullet(sprite.Sprite):
     def __init__(self, x, y):
         sprite.Sprite.__init__(self)
         self.xvel = 0
-        self.startX = x
-        self.startY = y
         self.image = Surface((WIDTH, HEIGHT))
         self.image = image.load("data/bul.png")
         self.rect = Rect(x, y, WIDTH, HEIGHT)

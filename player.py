@@ -22,6 +22,7 @@ DISPLAY = (WIN_WIDTH, WIN_HEIGHT)
 data = open('data/xvel yvel.txt', 'w')
 data.write('55 55')
 data.close()
+NEXT = False
 
 
 class Player(sprite.Sprite):
@@ -35,20 +36,14 @@ class Player(sprite.Sprite):
         self.image_s = self.images_stop[self.index]
         sprite.Sprite.__init__(self)
         self.xvel = 0
-        self.startX = x
-        self.startY = y
+        self.startX = 55
+        self.startY = 55
         self.rect = Rect(x, y, WIDTH, HEIGHT)
         self.yvel = 0
         self.onGround = False
         self.screen = display.set_mode(DISPLAY)
-        self.f1 = font.Font(None, 150)
-        self.text1 = self.f1.render('DEAD', True,
-                      (0, 0, 0))
-
 
     def update(self, left, right, up, platforms):
-
-
         if up:
             if self.onGround:
                 self.yvel = -JUMP_POWER
@@ -67,7 +62,6 @@ class Player(sprite.Sprite):
                 self.index = 0
             self.image = self.imagesr[self.index // 7]
 
-
         if not (left or right):
             self.xvel = 0
             self.index += 1
@@ -75,10 +69,8 @@ class Player(sprite.Sprite):
                 self.index = 0
             self.image = self.images_stop[self.index // 10]
 
-
         if not self.onGround:
             self.yvel += GRAVITY
-
 
         self.onGround = False;
         self.rect.y += self.yvel
@@ -100,33 +92,29 @@ class Player(sprite.Sprite):
                 if isinstance(p, block.BlockDie) or isinstance(p,
                                                                 monsters.Monster) or isinstance(p, Lov.Lovushka):
                     self.die()
+                elif isinstance(p, block.END):
+                    data = open('data/next.txt', 'w')
+                    data.write('NEXT')
+                    data.close()
 
                 else:
 
                     if xvel > 0:
                         self.rect.right = p.rect.left
-
                     if xvel < 0:
                         self.rect.left = p.rect.right
-
                     if yvel > 0:
                         self.rect.bottom = p.rect.top
                         self.onGround = True
                         self.yvel = 0
-
                     if yvel < 0:
                         self.rect.top = p.rect.bottom
                         self.yvel = 0
 
     def teleporting(self, goX, goY):
-        global dead
-        self.rect.x = goX
-        self.rect.y = goY
-        dead = False
+        self.rect.x = 55
+        self.rect.y = 55
 
     def die(self):
-        self.screen.blit(self.text1, (390, 250))
-        global dead
-        dead = True
-        time.wait(1000)
-        self.teleporting(self.startX, self.startY)
+        time.wait(700)
+        self.teleporting(55, 55)
