@@ -6,6 +6,7 @@ from bullet import *
 from monsters import *
 from Lov import *
 import sqlite3
+from money import *
 
 
 FPS = 60
@@ -21,6 +22,7 @@ shot = False
 lvl = ''
 data2 = open('level/obuchenie.txt', encoding='utf-8').read()
 table2 = [r.split('\t') for r in data2.split('\n')]
+level_num = 1
 
 
 class Camera(object):
@@ -46,11 +48,59 @@ def camera_configure(camera, target_rect):
 
     return Rect(l, t, w, h)
 
+def rez():
+    smallfont = pygame.font.SysFont('TimesNewRoman', 50)
+    pygame.init()
+    screen = pygame.display.set_mode(DISPLAY)
+    pygame.display.set_caption("Green hat")
+    bg = pygame.image.load("data/back.png")
+    screen.blit(bg, (0, 0))
+    timer = pygame.time.Clock()
+
+    button = pygame.Rect(55, 55, WIN_WIDTH - 110, 50)
+    text = smallfont.render('Level                          Score', True, (0, 0, 0))
+
+    button4 = pygame.Rect(50, 50, WIN_WIDTH - 100, WIN_HEIGHT -100)
+    button5 = pygame.Rect(49, 49, WIN_WIDTH - 98, WIN_HEIGHT - 98)
+
+
+
+    while 1:
+        timer.tick(FPS)
+
+        for e in pygame.event.get():
+            if e.type == pygame.QUIT:
+                raise SystemExit("QUIT")
+            if e.type == KEYDOWN and e.key == K_ESCAPE:
+                sc()
+
+
+
+        pygame.draw.rect(screen, [255, 255, 255], button5)
+        pygame.draw.rect(screen, [0, 0, 0], button4)
+        pygame.draw.rect(screen, [255, 255, 0], button)
+        screen.blit(text, (55, 50))
+        for i in range(2):
+            con = sqlite3.connect("BD.sqlite")
+            cur = con.cursor()
+            result = cur.execute(f"""SELECT lvl FROM score
+                                                    WHERE lvl == {i + 1}""").fetchall()
+            result1 = cur.execute(f"""SELECT score FROM score
+                                                                WHERE lvl == {i + 1}""").fetchall()
+            for elem in result:
+                lvl = elem[0]
+            for elem1 in result1:
+                lvl1 = elem1[0]
+            con.close()
+            text1 = smallfont.render(f'{str(lvl)}                 {str(lvl1)}', True, (255, 255, 0))
+            screen.blit(text1, (70, 55 + 60 * (i + 1)))
+        pygame.display.update()
+
 
 def sc():
     pygame.init()
     screen = pygame.display.set_mode(DISPLAY)
-    pygame.display.set_caption("Sh")
+    pygame.display.set_caption("Green hat")
     bg = pygame.image.load("data/back.png")
     screen.blit(bg, (0, 0))
     timer = pygame.time.Clock()
@@ -60,12 +110,12 @@ def sc():
     text = smallfont.render('Новая игра', True, (0, 0, 0))
 
     button2 = pygame.Rect(WIN_WIDTH // 2 - 150, 375, 300, 50)
-    text2 = smallfont.render('Продолжить', True, (0, 0, 0))
+    text2 = smallfont.render('Результаты', True, (0, 0, 0))
 
     button3 = pygame.Rect(WIN_WIDTH // 2 - 150, 450, 300, 50)
     text3 = smallfont.render('Обучение', True, (0, 0, 0))
 
-    smallfont1 = pygame.font.SysFont('Corbel', 100)
+    smallfont1 = pygame.font.SysFont('TimesNewRoman', 85)
     text4 = smallfont1.render('МЕНЮ', True, (0, 0, 0))
     button4 = pygame.Rect(WIN_WIDTH // 2 - 140, 30, 300, 100)
 
@@ -78,22 +128,15 @@ def sc():
 
             if e.type == pygame.MOUSEBUTTONDOWN and e.button == 1:
                 mouse_pos = e.pos
-                global lvl
+                global level_num
                 if button.collidepoint(mouse_pos):
-                    lvl = 'data/lvl1.txt'
+                    level_num = 1
                     main()
                 if button2.collidepoint(mouse_pos):
-                    level_num = open('data/lvl.txt', encoding='utf-8').readline()
-                    con = sqlite3.connect("data/BD.sqlite")
-                    cur = con.cursor()
-                    result = cur.execute(f"""SELECT lvl FROM level
-                                        WHERE num == {level_num}""").fetchall()
-                    for elem in result:
-                        lvl = elem[0]
-                    con.close()
-                    main()
+                    rez()
                 if button3.collidepoint(mouse_pos):
                     ob()
+
 
 
         if button.collidepoint(pygame.mouse.get_pos()):
@@ -111,126 +154,40 @@ def sc():
         elif not button3.collidepoint(pygame.mouse.get_pos()):
             pygame.draw.rect(screen, [255, 255, 255], button3)
 
+
         screen.blit(text, (WIN_WIDTH / 2 - 90, WIN_HEIGHT / 2))
         screen.blit(text2, (WIN_WIDTH / 2 - 105, 380))
         screen.blit(text3, (WIN_WIDTH / 2 - 85, 457))
         pygame.draw.rect(screen, [200, 200, 255], button4)
         screen.blit(text4, (WIN_WIDTH / 2 - 130, 40))
-
         pygame.display.update()
 
 
 def ob():
     pygame.init()
     screen = pygame.display.set_mode(DISPLAY)
-    pygame.display.set_caption("Jumper")
     bg = pygame.Surface((WIN_WIDTH, WIN_HEIGHT))
     bg.fill(pygame.Color(BACKGROUND_COLOR))
-
-    hero = Player(55, 55)
-    bull = Bullet(55, 55)
-    left = right = False
-    turn = ''
-    shot = False
-    up = False
-
-    entities = pygame.sprite.Group()
-    platforms = []
-    entities.add(hero)
-    entities.add(bull)
-
     timer = pygame.time.Clock()
-    x = y = 0
-    for row in table2:
-        for col in row:
-            for i in col:
-                if i == "#":
-                    rt = BlockAct(x, y)
-                    entities.add(rt)
-                    platforms.append(rt)
-
-                if i == "<":
-                    a = Lovushka(x, y, 2, 50, 15)
-                    entities.add(a)
-                    platforms.append(a)
-                    Lov.add(a)
-
-                if i == "@":
-                    rq = END(x, y)
-                    entities.add(rq)
-                    platforms.append(rq)
-
-                if i == "*":
-                    bd = BlockDie(x, y)
-                    entities.add(bd)
-                    platforms.append(bd)
-
-                if i == "-":
-                    pf = Platform(x, y)
-                    entities.add(pf)
-                    platforms.append(pf)
-
-                if i == '%':
-                    mn = Monster(x, y, 2, 2, 50, 15)
-                    entities.add(mn)
-                    platforms.append(mn)
-                    monsters.add(mn)
-
-                x += PLATFORM_WIDTH
-            y += PLATFORM_HEIGHT
-            x = 0
-
-    total_level_width = len(table2[0][0]) * PLATFORM_WIDTH
-    total_level_height = (len(table2))* PLATFORM_HEIGHT
-    camera = Camera(camera_configure, total_level_width, total_level_height)
-
+    bg = pygame.image.load("data/back.png")
+    screen.blit(bg, (0, 0))
+    bg1 = pygame.image.load("data/prav.png")
+    screen.blit(bg1, (100, 75))
     while 1:
         timer.tick(FPS)
-
         for e in pygame.event.get():
             if e.type == pygame.QUIT:
                 raise SystemExit("QUIT")
-            if e.type == KEYDOWN and e.key == pygame.K_a:
-                left = True
-                turn = 'left'
-            if e.type == KEYDOWN and e.key == pygame.K_d:
-                right = True
-                turn = 'right'
-            if e.type == pygame.KEYUP and e.key == pygame.K_d:
-                right = False
-            if e.type == pygame.KEYUP and e.key == pygame.K_a:
-                left = False
-            if e.type == KEYDOWN and e.key == K_SPACE:
-                up = True
-            if e.type == pygame.KEYUP and e.key == K_SPACE:
-                up = False
-            if e.type == KEYDOWN and e.key == K_RETURN:
-                shot = True
-            if e.type == pygame.KEYUP and e.key == K_RETURN:
-                shot = False
             if e.type == KEYDOWN and e.key == K_ESCAPE:
                 sc()
-        screen.blit(bg, (0, 0))
-        hero.update(left, right, up, platforms)
-        bull.update(shot, platforms, turn)
-        monsters.update(platforms)
-        Lov.update(platforms)
-        camera.update(hero)
-        for e in entities:
-            screen.blit(e.image, camera.apply(e))
         pygame.display.update()
-        nex = open('data/next.txt', encoding='utf-8').readline()
-        if nex == 'NEXT':
-            er = open('data/NEXT.txt', 'w')
-            er.write('')
-            er.close()
-            sc()
-
-
 
 
 def main():
-    level_num = open('data/lvl.txt', encoding='utf-8').readline()
+    global level_num
+    global lvl
+    score = 0
+
     con = sqlite3.connect("data/BD.sqlite")
     cur = con.cursor()
     result = cur.execute(f"""SELECT lvl FROM level
@@ -240,10 +197,8 @@ def main():
     con.close()
     data = open(lvl, encoding='utf-8').read()
     table = [r.split('\t') for r in data.split('\n')]
-
     pygame.init()
     screen = pygame.display.set_mode(DISPLAY)
-    pygame.display.set_caption("Sh")
     bg = pygame.Surface((WIN_WIDTH, WIN_HEIGHT))
     bg.fill(pygame.Color(BACKGROUND_COLOR))
 
@@ -253,6 +208,7 @@ def main():
     turn = ''
     shot = False
     up = False
+    game_time = 0
 
     entities = pygame.sprite.Group()
     platforms = []
@@ -296,6 +252,12 @@ def main():
                     platforms.append(mn)
                     monsters.add(mn)
 
+                if i == '&':
+                    mn = Money(x, y, 2, 2, 50, 15)
+                    entities.add(mn)
+                    platforms.append(mn)
+                    monsters.add(mn)
+
                 x += PLATFORM_WIDTH
             y += PLATFORM_HEIGHT
             x = 0
@@ -330,7 +292,13 @@ def main():
             if e.type == KEYDOWN and e.key == K_ESCAPE:
                 sc()
 
+        game_time += 1
         screen.blit(bg, (0, 0))
+        smallfont = pygame.font.SysFont('TimesNewRoman', 20)
+        text = smallfont.render(f'time: {game_time}', True, (0, 0, 0))
+        screen.blit(text, (50, 50))
+        death = smallfont.render(f'deaths: {deaths}', True, (0, 0, 0))
+        screen.blit(death, (WIN_WIDTH - 150, 50))
         hero.update(left, right, up, platforms)
         bull.update(shot, platforms, turn)
         monsters.update(platforms)
@@ -341,13 +309,13 @@ def main():
         pygame.display.update()
         nex = open('data/next.txt', encoding='utf-8').readline()
         if nex == 'NEXT':
-            er = open('data/NEXT.txt', 'w')
-            er.write('')
-            er.close()
-            er = open('data/lvl.txt', 'w')
-            er.write(str(int(level_num) + 1))
-            er.close()
+
+            data = open('data/next.txt', 'w')
+            data.write('')
+            data.close()
+            level_num += 1
             main()
+
 
 monsters = pygame.sprite.Group()
 Lov = pygame.sprite.Group()

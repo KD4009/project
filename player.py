@@ -22,7 +22,7 @@ DISPLAY = (WIN_WIDTH, WIN_HEIGHT)
 data = open('data/xvel yvel.txt', 'w')
 data.write('55 55')
 data.close()
-NEXT = False
+deaths = 0
 
 
 class Player(sprite.Sprite):
@@ -43,8 +43,8 @@ class Player(sprite.Sprite):
         self.rect = Rect(x, y, WIDTH, HEIGHT)
         self.yvel = 0
         self.onGround = False
-        self.screen = display.set_mode(DISPLAY)
-        self.f1 = font.Font(None, 150)
+
+
 
 
     def update(self, left, right, up, platforms):
@@ -136,6 +136,7 @@ class Player(sprite.Sprite):
     def teleporting(self, goX, goY):
         self.rect.x = goX
         self.rect.y = goY
+
 
     def die(self):
         time.wait(500)
