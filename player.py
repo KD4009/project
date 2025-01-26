@@ -42,8 +42,12 @@ class Player(sprite.Sprite):
         self.yvel = 0
         self.onGround = False
         self.screen = display.set_mode(DISPLAY)
+        self.f1 = font.Font(None, 150)
+
 
     def update(self, left, right, up, platforms):
+
+
         if up:
             if self.onGround:
                 self.yvel = -JUMP_POWER
@@ -62,6 +66,7 @@ class Player(sprite.Sprite):
                 self.index = 0
             self.image = self.imagesr[self.index // 7]
 
+
         if not (left or right):
             self.xvel = 0
             self.index += 1
@@ -69,8 +74,10 @@ class Player(sprite.Sprite):
                 self.index = 0
             self.image = self.images_stop[self.index // 10]
 
+
         if not self.onGround:
             self.yvel += GRAVITY
+
 
         self.onGround = False;
         self.rect.y += self.yvel
@@ -92,7 +99,7 @@ class Player(sprite.Sprite):
                 if isinstance(p, block.BlockDie) or isinstance(p,
                                                                 monsters.Monster) or isinstance(p, Lov.Lovushka):
                     self.die()
-                elif isinstance(p, block.END):
+                if isinstance(p, block.END):
                     data = open('data/next.txt', 'w')
                     data.write('NEXT')
                     data.close()
@@ -101,20 +108,23 @@ class Player(sprite.Sprite):
 
                     if xvel > 0:
                         self.rect.right = p.rect.left
+
                     if xvel < 0:
                         self.rect.left = p.rect.right
+
                     if yvel > 0:
                         self.rect.bottom = p.rect.top
                         self.onGround = True
                         self.yvel = 0
+
                     if yvel < 0:
                         self.rect.top = p.rect.bottom
                         self.yvel = 0
 
     def teleporting(self, goX, goY):
-        self.rect.x = 55
-        self.rect.y = 55
+        self.rect.x = goX
+        self.rect.y = goY
 
     def die(self):
-        time.wait(700)
-        self.teleporting(55, 55)
+        time.wait(1000)
+        self.teleporting(self.startX, self.startY)

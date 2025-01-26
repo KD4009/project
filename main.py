@@ -330,6 +330,7 @@ def main():
         pygame.display.update()
         nex = open('data/next.txt', encoding='utf-8').readline()
         if nex == 'NEXT':
+            print('sd')
             er = open('data/NEXT.txt', 'w')
             er.write('')
             er.close()
