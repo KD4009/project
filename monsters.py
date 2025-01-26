@@ -37,9 +37,9 @@ class Monster(sprite.Sprite):
         self.collide(platforms)
 
         if (abs(self.startX - self.rect.x) > self.maxLengthLeft):
-            self.xvel = -self.xvel  # если прошли максимальное растояние, то идеи в обратную сторону
+            self.xvel = -self.xvel
         if (abs(self.startY - self.rect.y) > self.maxLengthUp):
-            self.yvel = -self.yvel  # если прошли максимальное растояние, то идеи в обратную сторону, вертикаль
+            self.yvel = -self.yvel
 
     def collide(self, platforms):
         for p in platforms:

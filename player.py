@@ -27,10 +27,12 @@ NEXT = False
 
 class Player(sprite.Sprite):
     def __init__(self, x, y):
-        self.imagesr = [(image.load('player/r0.png')), (image.load('player/r1.png')), (image.load('player/r2.png')),
-                        (image.load('player/r3.png')), (image.load('player/r4.png'))]
-        self.imagesl = [(image.load('player/l1.png')), (image.load('player/l2.png'))]
-        self.images_stop = [(image.load('player/1s.gif'))]
+        self.imagesr = [(image.load('player/r0.gif')), (image.load('player/r1.gif')),
+                        (image.load('player/r2.gif')), (image.load('player/r3.gif'))]
+        self.imagesl = [(image.load('player/l0.gif')), (image.load('player/l1.gif')),
+                        (image.load('player/l2.gif')), (image.load('player/l3.gif'))]
+        self.images_stop = [(image.load('player/s0.gif')), (image.load('player/s1.gif'))]
+        self.images_jump = [(image.load('player/j.gif'))]
         self.index = 0
         self.image = self.imagesr[self.index]
         self.image_s = self.images_stop[self.index]
@@ -49,25 +51,34 @@ class Player(sprite.Sprite):
 
 
         if up:
+            self.index += 1
+            if self.index >= 5 * len(self.images_jump):
+                self.index = 0
+                self.image = self.images_jump[self.index // 5]
             if self.onGround:
                 self.yvel = -JUMP_POWER
 
+
+
         if left:
             self.xvel = -MOVE_SPEED
-            self.index += 1
-            if self.index >= 5 * len(self.imagesl):
-                self.index = 0
-            self.image = self.imagesl[self.index // 5]
+            if not up:
+                self.index += 1
+                if self.index >= 5 * len(self.imagesl):
+                    self.index = 0
+                self.image = self.imagesl[self.index // 5]
+
 
         if right:
             self.xvel = MOVE_SPEED
-            self.index += 1
-            if self.index >= 7 * len(self.imagesr):
-                self.index = 0
-            self.image = self.imagesr[self.index // 7]
+            if not up:
+                self.index += 1
+                if self.index >= 4 * len(self.imagesr):
+                    self.index = 0
+                self.image = self.imagesr[self.index // 4]
 
 
-        if not (left or right):
+        if not (left or right) and not up:
             self.xvel = 0
             self.index += 1
             if self.index >= 10 * len(self.images_stop):
@@ -77,6 +88,7 @@ class Player(sprite.Sprite):
 
         if not self.onGround:
             self.yvel += GRAVITY
+
 
 
         self.onGround = False;
@@ -99,7 +111,7 @@ class Player(sprite.Sprite):
                 if isinstance(p, block.BlockDie) or isinstance(p,
                                                                 monsters.Monster) or isinstance(p, Lov.Lovushka):
                     self.die()
-                if isinstance(p, block.END):
+                elif isinstance(p, block.END):
                     data = open('data/next.txt', 'w')
                     data.write('NEXT')
                     data.close()
@@ -126,5 +138,5 @@ class Player(sprite.Sprite):
         self.rect.y = goY
 
     def die(self):
-        time.wait(1000)
+        time.wait(500)
         self.teleporting(self.startX, self.startY)

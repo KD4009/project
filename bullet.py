@@ -18,7 +18,6 @@ class Bullet(sprite.Sprite):
         sprite.Sprite.__init__(self)
         self.xvel = 0
         self.image = Surface((WIDTH, HEIGHT))
-        self.image = image.load("data/bul.png")
         self.rect = Rect(x, y, WIDTH, HEIGHT)
         self.image.set_alpha(0)
         self.yvel = 0
@@ -32,12 +31,14 @@ class Bullet(sprite.Sprite):
         t = data.split()
 
         if shot and turn == 'right':
+            self.image = image.load("player/zr.gif")
             self.rect.y = int(t[-1])
             self.rect.x = int(t[0])
             self.image.set_alpha(255)
             self.xvel = +MOVE_SPEED
             Bul = True
         if shot and turn == 'left':
+            self.image = image.load("player/zl.gif")
             self.rect.y = int(t[-1])
             self.rect.x = int(t[0])
             self.image.set_alpha(255)

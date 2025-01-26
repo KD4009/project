@@ -6,12 +6,6 @@ from bullet import *
 from monsters import *
 from Lov import *
 import sqlite3
-from player import NEXT
-
-
-import os
-import sys
-import argparse
 
 
 FPS = 60
@@ -71,6 +65,9 @@ def sc():
     button3 = pygame.Rect(WIN_WIDTH // 2 - 150, 450, 300, 50)
     text3 = smallfont.render('Обучение', True, (0, 0, 0))
 
+    smallfont1 = pygame.font.SysFont('Corbel', 100)
+    text4 = smallfont1.render('МЕНЮ', True, (0, 0, 0))
+    button4 = pygame.Rect(WIN_WIDTH // 2 - 140, 30, 300, 100)
 
     while 1:
         timer.tick(FPS)
@@ -117,6 +114,8 @@ def sc():
         screen.blit(text, (WIN_WIDTH / 2 - 90, WIN_HEIGHT / 2))
         screen.blit(text2, (WIN_WIDTH / 2 - 105, 380))
         screen.blit(text3, (WIN_WIDTH / 2 - 85, 457))
+        pygame.draw.rect(screen, [200, 200, 255], button4)
+        screen.blit(text4, (WIN_WIDTH / 2 - 130, 40))
 
         pygame.display.update()
 
@@ -155,6 +154,11 @@ def ob():
                     entities.add(a)
                     platforms.append(a)
                     Lov.add(a)
+
+                if i == "@":
+                    rq = END(x, y)
+                    entities.add(rq)
+                    platforms.append(rq)
 
                 if i == "*":
                     bd = BlockDie(x, y)
@@ -215,6 +219,14 @@ def ob():
         for e in entities:
             screen.blit(e.image, camera.apply(e))
         pygame.display.update()
+        nex = open('data/next.txt', encoding='utf-8').readline()
+        if nex == 'NEXT':
+            er = open('data/NEXT.txt', 'w')
+            er.write('')
+            er.close()
+            sc()
+
+
 
 
 def main():
@@ -293,7 +305,7 @@ def main():
     camera = Camera(camera_configure, total_level_width, total_level_height)
 
     while 1:
-        timer.tick(60)
+        timer.tick(FPS)
         for e in pygame.event.get():
             if e.type == pygame.QUIT:
                 raise SystemExit("QUIT")
@@ -318,7 +330,6 @@ def main():
             if e.type == KEYDOWN and e.key == K_ESCAPE:
                 sc()
 
-
         screen.blit(bg, (0, 0))
         hero.update(left, right, up, platforms)
         bull.update(shot, platforms, turn)
@@ -330,7 +341,6 @@ def main():
         pygame.display.update()
         nex = open('data/next.txt', encoding='utf-8').readline()
         if nex == 'NEXT':
-            print('sd')
             er = open('data/NEXT.txt', 'w')
             er.write('')
             er.close()
