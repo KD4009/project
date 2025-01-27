@@ -12,7 +12,7 @@ class Mon(sprite.Sprite):
     def __init__(self, x, y):
         sprite.Sprite.__init__(self)
         self.image = Surface((MONSTER_WIDTH, MONSTER_HEIGHT))
-        self.images = [(image.load('player/m0.gif')), (image.load('player/m1.gif')), (image.load('player/m2.gif'))]
+        self.images = [(image.load('data/m0.gif')), (image.load('data/m1.gif'))]
         self.index = 0
         self.image = self.images[self.index]
         self.rect = Rect(x, y, MONSTER_WIDTH, MONSTER_HEIGHT)
