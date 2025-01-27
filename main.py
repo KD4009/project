@@ -17,7 +17,6 @@ DISPLAY = (WIN_WIDTH, WIN_HEIGHT)
 BACKGROUND_COLOR = "#f2ebac"
 PLATFORM_WIDTH = 32
 PLATFORM_HEIGHT = 32
-PLATFORM_COLOR = "#FF6265"
 direc = 'right'
 shot = False
 lvl = ''
