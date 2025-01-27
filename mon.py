@@ -29,3 +29,4 @@ class Mon(sprite.Sprite):
         data2 = open('data/money.txt', encoding='utf-8').readline()
         if data2 == '1':
             self.image.set_alpha(0)
+            self.rect.y -= 1000

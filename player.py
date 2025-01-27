@@ -114,16 +114,14 @@ class Player(sprite.Sprite):
         for p in platforms:
             if sprite.collide_rect(self, p):
                 if isinstance(p, block.BlockDie) or isinstance(p,
-                                                                monsters.Monster) or isinstance(p, Lov.Lovushka):
+                                                                monsters.Monster) or isinstance(p, Lov.Lovushka)\
+                        and not isinstance(p, mon.Mon):
                     self.die()
                 elif isinstance(p, block.END):
                     data = open('data/next.txt', 'w')
                     data.write('NEXT')
                     data.close()
-                elif isinstance(p, mon.Mon):
-                    money = open('data/money.txt', 'w')
-                    money.write('1')
-                    money.close()
+
 
 
                 else:

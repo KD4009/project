@@ -1,6 +1,6 @@
 from pygame import *
 from pygame.display import update
-
+import mon
 import block
 
 MOVE_SPEED = 8
@@ -69,7 +69,10 @@ class Bullet(sprite.Sprite):
                     self.rect.y = int(t[-1])
                     self.rect.x = int(t[0])
                     Bul = False
-
+                elif isinstance(p, mon.Mon):
+                    money = open('data/money.txt', 'w')
+                    money.write('1')
+                    money.close()
                 else:
                     if xvel > 0:
                         self.rect.right = p.rect.left
