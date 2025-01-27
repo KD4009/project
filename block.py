@@ -33,6 +33,8 @@ class END(Platform):
         self.image = image.load("data/p0.gif")
 
 
+
+
 #class Door(Platform):
  #   def __init__(self, x, y):
  #       Platform.__init__(self, x, y)

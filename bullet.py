@@ -69,7 +69,7 @@ class Bullet(sprite.Sprite):
                     self.rect.y = int(t[-1])
                     self.rect.x = int(t[0])
                     Bul = False
-                    self.act()
+
                 else:
                     if xvel > 0:
                         self.rect.right = p.rect.left
@@ -83,6 +83,3 @@ class Bullet(sprite.Sprite):
                         self.rect.y = int(t[-1])
                         self.rect.x = int(t[0])
                         Bul = False
-
-    def act(self):
-        pass

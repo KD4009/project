@@ -6,7 +6,8 @@ from bullet import *
 from monsters import *
 from Lov import *
 import sqlite3
-from money import *
+from mon import *
+
 
 
 FPS = 60
@@ -23,6 +24,7 @@ lvl = ''
 data2 = open('level/obuchenie.txt', encoding='utf-8').read()
 table2 = [r.split('\t') for r in data2.split('\n')]
 level_num = 1
+score = 0
 
 
 class Camera(object):
@@ -162,6 +164,26 @@ def sc():
         screen.blit(text4, (WIN_WIDTH / 2 - 130, 40))
         pygame.display.update()
 
+def schet():
+    pygame.init()
+    screen = pygame.display.set_mode(DISPLAY)
+    bg = pygame.Surface((WIN_WIDTH, WIN_HEIGHT))
+    bg.fill(pygame.Color(BACKGROUND_COLOR))
+    timer = pygame.time.Clock()
+    bg = pygame.image.load("data/rez.gif")
+    screen.blit(bg, (0, 0))
+    smallfont = pygame.font.SysFont('Corbel', 60)
+    text = smallfont.render(f'Score: {score // 1}', True, (0, 0, 0))
+    while 1:
+        timer.tick(FPS)
+        for e in pygame.event.get():
+            if e.type == pygame.QUIT:
+                raise SystemExit("QUIT")
+            elif e.type == pygame.KEYDOWN or e.type == pygame.MOUSEBUTTONDOWN:
+                main()
+        screen.blit(text, (WIN_WIDTH / 2 - 250, WIN_HEIGHT / 2 - 150))
+        pygame.display.update()
+
 
 def ob():
     pygame.init()
@@ -186,8 +208,11 @@ def ob():
 def main():
     global level_num
     global lvl
+    global score
     score = 0
-
+    data = open('data/deaths.txt', 'w')
+    data.write('0')
+    data.close()
     con = sqlite3.connect("data/BD.sqlite")
     cur = con.cursor()
     result = cur.execute(f"""SELECT lvl FROM level
@@ -252,11 +277,11 @@ def main():
                     platforms.append(mn)
                     monsters.add(mn)
 
-                if i == '&':
-                    mn = Money(x, y, 2, 2, 50, 15)
+                if i == '1':
+                    mn = Mon(x, y)
                     entities.add(mn)
                     platforms.append(mn)
-                    monsters.add(mn)
+                    mon.add(mn)
 
                 x += PLATFORM_WIDTH
             y += PLATFORM_HEIGHT
@@ -294,14 +319,16 @@ def main():
 
         game_time += 1
         screen.blit(bg, (0, 0))
+        data2 = open('data/deaths.txt', encoding='utf-8').readline()
         smallfont = pygame.font.SysFont('TimesNewRoman', 20)
         text = smallfont.render(f'time: {game_time}', True, (0, 0, 0))
         screen.blit(text, (50, 50))
-        death = smallfont.render(f'deaths: {deaths}', True, (0, 0, 0))
+        death = smallfont.render(f'deaths: {data2}', True, (0, 0, 0))
         screen.blit(death, (WIN_WIDTH - 150, 50))
         hero.update(left, right, up, platforms)
         bull.update(shot, platforms, turn)
         monsters.update(platforms)
+        mon.update(platforms)
         Lov.update(platforms)
         camera.update(hero)
         for e in entities:
@@ -309,16 +336,18 @@ def main():
         pygame.display.update()
         nex = open('data/next.txt', encoding='utf-8').readline()
         if nex == 'NEXT':
-
+            score = 10000000 / game_time + 1000 / (int(data2) + 1)
             data = open('data/next.txt', 'w')
             data.write('')
             data.close()
             level_num += 1
-            main()
+            schet()
 
 
 monsters = pygame.sprite.Group()
+mon = pygame.sprite.Group()
 Lov = pygame.sprite.Group()
+
 
 if __name__ == "__main__":
     sc()

@@ -47,6 +47,7 @@ class Player(sprite.Sprite):
 
 
 
+
     def update(self, left, right, up, platforms):
 
 
@@ -116,6 +117,7 @@ class Player(sprite.Sprite):
                     data.write('NEXT')
                     data.close()
 
+
                 else:
 
                     if xvel > 0:
@@ -139,5 +141,11 @@ class Player(sprite.Sprite):
 
 
     def die(self):
+        data2 = open('data/deaths.txt', encoding='utf-8').readline()
+        data = open('data/deaths.txt', 'w')
+        data.write(str(int(data2) + 1))
+        data.close()
+        global deaths
+        deaths += 1
         time.wait(500)
         self.teleporting(self.startX, self.startY)
