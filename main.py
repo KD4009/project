@@ -210,6 +210,9 @@ def main():
     global lvl
     global score
     score = 0
+    money = open('data/money.txt', 'w')
+    money.write('0')
+    money.close()
     data = open('data/deaths.txt', 'w')
     data.write('0')
     data.close()
@@ -320,9 +323,12 @@ def main():
         game_time += 1
         screen.blit(bg, (0, 0))
         data2 = open('data/deaths.txt', encoding='utf-8').readline()
+        monetka = open('data/money.txt', encoding='utf-8').readline()
         smallfont = pygame.font.SysFont('TimesNewRoman', 20)
         text = smallfont.render(f'time: {game_time}', True, (0, 0, 0))
         screen.blit(text, (50, 50))
+        text45 = smallfont.render(f'money: {monetka}', True, (0, 0, 0))
+        screen.blit(text45, (450, 50))
         death = smallfont.render(f'deaths: {data2}', True, (0, 0, 0))
         screen.blit(death, (WIN_WIDTH - 150, 50))
         hero.update(left, right, up, platforms)
@@ -336,7 +342,18 @@ def main():
         pygame.display.update()
         nex = open('data/next.txt', encoding='utf-8').readline()
         if nex == 'NEXT':
-            score = 10000000 / game_time + 1000 / (int(data2) + 1)
+            score = 10000000 / game_time + 1000 / (int(data2) + 1) + int(monetka) * 1000
+            con = sqlite3.connect("BD.sqlite")
+            cur = con.cursor()
+            res = cur.execute(f"""SELECT score FROM score
+                                WHERE lvl == {level_num}""").fetchall()
+            for i in res:
+                res = i
+            res = res[0]
+            if res < score:
+                cur.execute(f"""Update score set score = {score} where lvl == {level_num}""").fetchall()
+            con.commit()
+            con.close()
             data = open('data/next.txt', 'w')
             data.write('')
             data.close()

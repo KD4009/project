@@ -1,9 +1,7 @@
 from pygame import *
-import pyganim
 import os
 
-import bullet
-from bullet import bullets
+
 
 MONSTER_WIDTH = 32
 MONSTER_HEIGHT = 32
@@ -23,15 +21,11 @@ class Mon(sprite.Sprite):
 
 
     def update(self, platforms):
+        self.image.set_alpha(255)
         self.index += 1
         if self.index >= 7 * len(self.images):
             self.index = 0
         self.image = self.images[self.index // 7]
-        self.collide(platforms)
-
-
-    def collide(self, platforms):
-        for p in platforms:
-            if sprite.collide_rect(self, p) and self != p:
-                if isinstance(p, bullet.Bullet):
-                    print('sd')
+        data2 = open('data/money.txt', encoding='utf-8').readline()
+        if data2 == '1':
+            self.image.set_alpha(0)

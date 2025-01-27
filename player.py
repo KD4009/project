@@ -6,6 +6,7 @@ import pyganim
 
 import Lov
 import block
+import mon
 import monsters
 
 
@@ -23,6 +24,9 @@ data = open('data/xvel yvel.txt', 'w')
 data.write('55 55')
 data.close()
 deaths = 0
+money = open('data/money.txt', 'w')
+money.write('0')
+money.close()
 
 
 class Player(sprite.Sprite):
@@ -116,6 +120,10 @@ class Player(sprite.Sprite):
                     data = open('data/next.txt', 'w')
                     data.write('NEXT')
                     data.close()
+                elif isinstance(p, mon.Mon):
+                    money = open('data/money.txt', 'w')
+                    money.write('1')
+                    money.close()
 
 
                 else:
