@@ -2,7 +2,6 @@ from pygame import *
 import os
 import sys
 import argparse
-import pyganim
 
 import Lov
 import block
