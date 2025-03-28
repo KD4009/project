@@ -4,10 +4,9 @@ from player import *
 from block import *
 from bullet import *
 from monsters import *
-from Lov import *
+from monsters_2 import *
 import sqlite3
-from mon import *
-
+from coin import *
 
 
 FPS = 60
@@ -20,8 +19,6 @@ PLATFORM_HEIGHT = 32
 direc = 'right'
 shot = False
 lvl = ''
-data2 = open('level/obuchenie.txt', encoding='utf-8').read()
-table2 = [r.split('\t') for r in data2.split('\n')]
 level_num = 1
 score = 0
 
@@ -64,8 +61,6 @@ def rez():
     button4 = pygame.Rect(50, 50, WIN_WIDTH - 100, WIN_HEIGHT -100)
     button5 = pygame.Rect(49, 49, WIN_WIDTH - 98, WIN_HEIGHT - 98)
 
-
-
     while 1:
         timer.tick(FPS)
 
@@ -74,8 +69,6 @@ def rez():
                 raise SystemExit("QUIT")
             if e.type == KEYDOWN and e.key == K_ESCAPE:
                 sc()
-
-
 
         pygame.draw.rect(screen, [255, 255, 255], button5)
         pygame.draw.rect(screen, [0, 0, 0], button4)
@@ -137,8 +130,6 @@ def sc():
                     rez()
                 if button3.collidepoint(mouse_pos):
                     ob()
-
-
 
         if button.collidepoint(pygame.mouse.get_pos()):
             pygame.draw.rect(screen, [150, 150, 150], button)
@@ -205,24 +196,13 @@ def ob():
 
 
 def main():
-    global level_num
-    global lvl
-    global score
+    global level_num, lvl, score
+    sec_ = pygame.time.get_ticks() // 1000
     score = 0
-    money = open('data/money.txt', 'w')
-    money.write('0')
-    money.close()
-    data = open('data/deaths.txt', 'w')
-    data.write('0')
-    data.close()
-    con = sqlite3.connect("data/BD.sqlite")
-    cur = con.cursor()
-    result = cur.execute(f"""SELECT lvl FROM level
-                                            WHERE num == {level_num}""").fetchall()
-    for elem in result:
-        lvl = elem[0]
-    con.close()
-    data = open(lvl, encoding='utf-8').read()
+    Deaths.deaths = 0
+    MyGlobals.MONEY = 0
+    l = f'level/lvl{level_num}.txt'
+    data = open(l, encoding='utf-8').read()
     table = [r.split('\t') for r in data.split('\n')]
     pygame.init()
     screen = pygame.display.set_mode(DISPLAY)
@@ -235,7 +215,6 @@ def main():
     turn = ''
     shot = False
     up = False
-    game_time = 0
 
     entities = pygame.sprite.Group()
     platforms = []
@@ -319,14 +298,13 @@ def main():
             if e.type == KEYDOWN and e.key == K_ESCAPE:
                 sc()
 
-        game_time += 1
+        sec = pygame.time.get_ticks() // 1000
         screen.blit(bg, (0, 0))
-        data2 = open('data/deaths.txt', encoding='utf-8').readline()
-        monetka = open('data/money.txt', encoding='utf-8').readline()
+        data2 = Deaths.deaths
         smallfont = pygame.font.SysFont('TimesNewRoman', 20)
-        text = smallfont.render(f'time: {game_time}', True, (0, 0, 0))
+        text = smallfont.render(f'time: {(f'{(sec - sec_) // 60}:{(sec - sec_)}')}', True, (0, 0, 0))
         screen.blit(text, (50, 50))
-        text45 = smallfont.render(f'money: {monetka}', True, (0, 0, 0))
+        text45 = smallfont.render(f'money: {MyGlobals.MONEY}', True, (0, 0, 0))
         screen.blit(text45, (450, 50))
         death = smallfont.render(f'deaths: {data2}', True, (0, 0, 0))
         screen.blit(death, (WIN_WIDTH - 150, 50))
@@ -339,9 +317,11 @@ def main():
         for e in entities:
             screen.blit(e.image, camera.apply(e))
         pygame.display.update()
-        nex = open('data/next.txt', encoding='utf-8').readline()
-        if nex == 'NEXT':
-            score = 10000000 / game_time + 1000 / (int(data2) + 1) + int(monetka) * 1000
+        if Next.NEXT == 1:
+            if 100 - sec > 0:
+                score = int(100 - sec + 1000 / (int(data2) + 1) + int(MyGlobals.MONEY) * 1000)
+            else:
+                score = int(1000 / (int(data2) + 1) + int(MyGlobals.MONEY) * 1000)
             con = sqlite3.connect("BD.sqlite")
             cur = con.cursor()
             res = cur.execute(f"""SELECT score FROM score
@@ -353,10 +333,8 @@ def main():
                 cur.execute(f"""Update score set score = {score} where lvl == {level_num}""").fetchall()
             con.commit()
             con.close()
-            data = open('data/next.txt', 'w')
-            data.write('')
-            data.close()
             level_num += 1
+            Next.NEXT = False
             schet()
 
 

@@ -3,10 +3,11 @@ import os
 import sys
 import argparse
 
-import Lov
+import monsters_2
 import block
-import mon
+import coin
 import monsters
+from bullet import Poz
 
 
 MOVE_SPEED = 4.5
@@ -15,17 +16,17 @@ HEIGHT = 32
 COLOR = "#888888"
 JUMP_POWER = 7
 GRAVITY = 0.35
-dead = False
 WIN_WIDTH = 1000
 WIN_HEIGHT = 608
 DISPLAY = (WIN_WIDTH, WIN_HEIGHT)
-data = open('data/xvel yvel.txt', 'w')
-data.write('55 55')
-data.close()
-deaths = 0
-money = open('data/money.txt', 'w')
-money.write('0')
-money.close()
+
+
+class Deaths():
+    deaths = 0
+
+
+class Next():
+    NEXT = False
 
 
 class Player(sprite.Sprite):
@@ -48,11 +49,7 @@ class Player(sprite.Sprite):
         self.onGround = False
 
 
-
-
-
     def update(self, left, right, up, platforms):
-
 
         if up:
             self.index += 1
@@ -62,8 +59,6 @@ class Player(sprite.Sprite):
             if self.onGround:
                 self.yvel = -JUMP_POWER
 
-
-
         if left:
             self.xvel = -MOVE_SPEED
             if not up:
@@ -71,7 +66,6 @@ class Player(sprite.Sprite):
                 if self.index >= 5 * len(self.imagesl):
                     self.index = 0
                 self.image = self.imagesl[self.index // 5]
-
 
         if right:
             self.xvel = MOVE_SPEED
@@ -81,7 +75,6 @@ class Player(sprite.Sprite):
                     self.index = 0
                 self.image = self.imagesr[self.index // 4]
 
-
         if not (left or right) and not up:
             self.xvel = 0
             self.index += 1
@@ -89,11 +82,8 @@ class Player(sprite.Sprite):
                 self.index = 0
             self.image = self.images_stop[self.index // 10]
 
-
         if not self.onGround:
             self.yvel += GRAVITY
-
-
 
         self.onGround = False;
         self.rect.y += self.yvel
@@ -102,26 +92,18 @@ class Player(sprite.Sprite):
         self.rect.x += self.xvel
         self.collide(self.xvel, 0, platforms)
 
-        s = str(self.rect.x) + ' ' + str(self.rect.y)
-        data = open('data/xvel yvel.txt', 'w')
-        data.write(s)
-        data.close()
-
+        Poz.poz = str(self.rect.x) + ' ' + str(self.rect.y)
 
 
     def collide(self, xvel, yvel, platforms):
         for p in platforms:
             if sprite.collide_rect(self, p):
                 if isinstance(p, block.BlockDie) or isinstance(p,
-                                                                monsters.Monster) or isinstance(p, Lov.Lovushka)\
-                        and not isinstance(p, mon.Mon):
+                                                                monsters.Monster) or isinstance(p, monsters_2.Lovushka)\
+                        and not isinstance(p, coin.Mon):
                     self.die()
                 elif isinstance(p, block.END):
-                    data = open('data/next.txt', 'w')
-                    data.write('NEXT')
-                    data.close()
-
-
+                    Next.NEXT = True
 
                 else:
 
@@ -146,11 +128,7 @@ class Player(sprite.Sprite):
 
 
     def die(self):
-        data2 = open('data/deaths.txt', encoding='utf-8').readline()
-        data = open('data/deaths.txt', 'w')
-        data.write(str(int(data2) + 1))
-        data.close()
         global deaths
-        deaths += 1
+        Deaths.deaths += 1
         time.wait(500)
         self.teleporting(self.startX, self.startY)

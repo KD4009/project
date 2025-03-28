@@ -1,7 +1,8 @@
 from pygame import *
 from pygame.display import update
-import mon
+import coin
 import block
+
 
 MOVE_SPEED = 8
 WIDTH = 25
@@ -10,6 +11,13 @@ COLOR = "#888888"
 bullets = []
 Bul = False
 
+
+class MyGlobals():
+    MONEY = 0
+
+
+class Poz():
+    poz = ''
 
 
 class Bullet(sprite.Sprite):
@@ -27,7 +35,7 @@ class Bullet(sprite.Sprite):
 
     def update(self, shot, platforms, turn):
         global Bul
-        data = open('data/xvel yvel.txt', encoding='utf-8').read()
+        data = Poz.poz
         t = data.split()
 
         if shot and turn == 'right':
@@ -45,7 +53,6 @@ class Bullet(sprite.Sprite):
             self.xvel = -MOVE_SPEED
             Bul = True
 
-
         self.shot = False
 
         if not Bul:
@@ -57,11 +64,10 @@ class Bullet(sprite.Sprite):
         self.collide(self.xvel, 0, platforms)
 
 
-
-
     def collide(self, xvel, yvel, platforms):
+
         global Bul
-        data = open('data/xvel yvel.txt', encoding='utf-8').read()
+        data = Poz.poz
         t = data.split()
         for p in platforms:
             if sprite.collide_rect(self, p):
@@ -69,10 +75,8 @@ class Bullet(sprite.Sprite):
                     self.rect.y = int(t[-1])
                     self.rect.x = int(t[0])
                     Bul = False
-                elif isinstance(p, mon.Mon):
-                    money = open('data/money.txt', 'w')
-                    money.write('1')
-                    money.close()
+                elif isinstance(p, coin.Mon):
+                    MyGlobals.MONEY = 1
                 else:
                     if xvel > 0:
                         self.rect.right = p.rect.left

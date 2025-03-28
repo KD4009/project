@@ -1,5 +1,6 @@
 from pygame import *
 import os
+from bullet import MyGlobals
 
 
 
@@ -26,7 +27,7 @@ class Mon(sprite.Sprite):
         if self.index >= 7 * len(self.images):
             self.index = 0
         self.image = self.images[self.index // 7]
-        data2 = open('data/money.txt', encoding='utf-8').readline()
-        if data2 == '1':
+        data2 = MyGlobals.MONEY
+        if data2 == 1:
             self.image.set_alpha(0)
             self.rect.y -= 1000
